@@ -76,13 +76,18 @@ const ReactionRelation = styled.div`
     flex-direction: row;
     overflow-y: hidden;
     img {
+      transition: transform 0.2s;
       margin: 5px;
       height: 32px;
       width: 32px;
     }
+    img:hover {
+      transform: scale(1.5);
+    }
     .column {
       position: relative;
       overflow-y: auto;
+      overflow-x: hidden;
       height: 100%;
       width: 50%;
     }
@@ -111,9 +116,11 @@ const RoleName = styled.div`
   margin: 5px;
   padding: 5px 10px;
   font-size: 18px;
+  transition: transform 0.2s;
   &:hover {
     color: ${props => props.color || 'white' };
     background-color: #718096;
+    transform: scale(1.2);
   }
 `;
 
@@ -174,7 +181,13 @@ const GuildInfo = (props: {guild: Guild}) => {
               {
                 (guildRoles && guildRoles.cache.size) ? 
                 guildRoles.cache.sort((r, rb) => r.position - rb.position).map(r => 
-                  <RoleName color={r.hexColor} key={r.id}>{r.name}</RoleName>
+                  <RoleName 
+                    color={r.hexColor} 
+                    onClick={() => setRole(r)}
+                    key={r.id}
+                  >
+                    {r.name}
+                  </RoleName>
                 ) : 
                 <span>No roles. :)</span>
               }
@@ -184,7 +197,8 @@ const GuildInfo = (props: {guild: Guild}) => {
                 (guildEmojis && guildEmojis.cache.size) ? 
                 guildEmojis.cache.map(e => 
                   <img 
-                    src={`${emojiUrl}${e.id}${e.animated ? '.gif': '.png'}`} 
+                    src={`${emojiUrl}${e.id}${e.animated ? '.gif': '.png'}`}
+                    onClick={() => setEmoji(e)}
                     title={e.name}
                     key={e.id}
                   />
@@ -194,7 +208,7 @@ const GuildInfo = (props: {guild: Guild}) => {
             </div>
           </div>
           <div className='footer'>
-            <RoleEmoji>
+            <RoleEmoji color={role?.hexColor}>
               {role ? role.name : 'Role Name'}
               { 
                 emoji ? 
