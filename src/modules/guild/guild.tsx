@@ -36,9 +36,9 @@ const MissingGuild = styled.div`
   }
 `;
 
-const Area = styled.div`
-  padding: 20px 50px;
+const Body = styled.div`
   width: 100%;
+  padding-top: 20px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -57,64 +57,77 @@ const Area = styled.div`
   }
 `;
 
-const ReactionRelation = styled.div`
+const Header = styled.div`
+  display: flex;
+  flex-direction: row;
+  padding-bottom: 10px;
+  justify-content: space-around;
+  border-bottom: 2px solid grey;
+  margin-bottom: 17px;
+`;
+
+const Content = styled.div`
+  display: flex;
+  flex-direction: row;
+  overflow-y: hidden;
+  img {
+    transition: transform 0.2s;
+    margin: 5px;
+    height: 32px;
+    width: 32px;
+  }
+  img:hover {
+    transform: scale(1.5);
+  }
+  .column {
+    position: relative;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 100%;
+    width: 50%;
+  }
+  .reactRoles {
+    display: flex;
+    flex-wrap: wrap;
+    overflow: auto;
+    position: relative;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 100%;
+    img { margin: 0; }
+  }
+  .roles {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .emojis {
+    margin-left: 10px;
+  }
+  .emojiTitle {
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+  }
+  .twemoji {
+    display: inline-block;
+  }
+`;
+
+const Footer = styled.div`
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+`;
+
+const Card = styled.div`
   background-color: #1a1c20;
+  margin: 20px;
   padding: 25px;
   width: 45%;
   height: 45vh;
   display: flex;
   flex-direction: column;
   overflow: auto;
-  .header {
-    display: flex;
-    flex-direction: row;
-    padding-bottom: 10px;
-    justify-content: space-around;
-    border-bottom: 2px solid grey;
-    margin-bottom: 17px;
-  }
-  .content {
-    display: flex;
-    flex-direction: row;
-    overflow-y: hidden;
-    img {
-      transition: transform 0.2s;
-      margin: 5px;
-      height: 32px;
-      width: 32px;
-    }
-    img:hover {
-      transform: scale(1.5);
-    }
-    .column {
-      position: relative;
-      overflow-y: auto;
-      overflow-x: hidden;
-      height: 100%;
-      width: 50%;
-    }
-    .roles {
-      display: flex;
-      flex-wrap: wrap;
-    }
-    .emojis {
-      margin-left: 10px;
-    }
-    .emojiTitle {
-      font-size: 20px;
-      display: flex;
-      justify-content: center;
-    }
-    .twemoji {
-      display: inline-block;
-    }
-  }
-  .footer {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-  }
 `;
 
 const RoleName = styled.div`
@@ -140,6 +153,10 @@ const RoleEmoji = styled.div`
   border: 2px solid ${props => props.color || '#718096'};
   padding: 8px;
   border-radius: 10%;
+  height: fit-content;
+  display: flex;
+  margin: 5px;
+  align-items: center;
   img {
     width: 18px;
     height: 18px;
@@ -151,6 +168,7 @@ const OutlineBtn = styled.button`
   color: #718096;
   border: 2px solid #718096;
   background-color: transparent;
+  height: fit-content;
   font-size: 18px;
   padding: 8px;
   border-radius: 10%;
@@ -162,13 +180,23 @@ const OutlineBtn = styled.button`
   }
 `;
 
+interface IReactionRole {
+  role_id: string;
+  role_name: string;
+  role_color: string;
+  emoji_id: string | null;
+  emoji_name: string;
+  animated: boolean;
+  isUnicode: boolean;
+}
+
 const GuildInfo = (props: {guild: Guild}) => {
   const { guild } = props;
   const [loading, setLoad] = React.useState(true);
   const [userGuild, setGuild] = React.useState<any>();
   const [guildEmojis, setEmojis] = React.useState<GuildEmojiManager | undefined>();
   const [guildRoles, setRoles] = React.useState<RoleManager | undefined>();
-  const [reactRoles, setReactRoles] = React.useState<any>();
+  const [reactRoles, setReactRoles] = React.useState<IReactionRole[]>();
   const [role, setRole] = React.useState<Role>();
   const [emoji, setEmoji] = React.useState<Emoji | string>();
   const docUrl = 'https://app.gitbook.com/@duwtgb/s/rolebot/';
@@ -190,20 +218,42 @@ const GuildInfo = (props: {guild: Guild}) => {
       <MissingGuild>Loading guild data....</MissingGuild>
     );
   }
+
+  const submitReaction = () => {
+    if(role && emoji) {
+      console.log(`Submitting reaction role...`)
+      /**
+       * @TODO - Need to make sure each one is unique 
+       */
+      const arr = reactRoles || [];
+      setReactRoles(
+        [...arr,
+        {
+          role_id: role.id,
+          role_name: role.name,
+          role_color: role.hexColor,
+          emoji_id: (emoji instanceof Emoji) ? emoji.id : emoji,
+          emoji_name: (emoji instanceof Emoji) ? emoji.name : emoji,
+          animated: (emoji instanceof Emoji) ? emoji.animated : false,
+          isUnicode: (emoji instanceof Emoji)
+        }]
+      );
+    }
+  }
     
   return (
     <>
       {
       userGuild ?
-      <Area>
+      <Body>
         <div className='title'>{guild.name}</div>
-        <ReactionRelation>
-          <div className='header'>
+        <Card>
+          <Header>
             <span>Roles</span>
             <span>Emojis</span>
-          </div>
-          <div className='content'>
-            <div className='roles column'>
+          </Header>
+          <Content>
+            <div className='column roles'>
               {
                 (guildRoles && guildRoles.cache.size) ? 
                 guildRoles.cache.sort((r, rb) => r.position - rb.position).map(r => 
@@ -252,8 +302,14 @@ const GuildInfo = (props: {guild: Guild}) => {
                 }
               </>
             </div>
-          </div>
-          <div className='footer'>
+          </Content>
+          <Footer>
+            <OutlineBtn 
+              disabled={!emoji || !role}
+              onClick={submitReaction}
+            >
+              SUBMIT
+            </OutlineBtn>
             <RoleEmoji color={role?.hexColor}>
               {role ? role.name : 'Role Name'}
               { 
@@ -274,14 +330,43 @@ const GuildInfo = (props: {guild: Guild}) => {
                 />
               }
             </RoleEmoji>
-            <OutlineBtn disabled={!emoji || !role}>SUBMIT</OutlineBtn>
-          </div>
-        </ReactionRelation>
+          </Footer>
+        </Card>
 
-        <div>
-          <p>Reaction Roles here :)</p>
-        </div>
-      </Area> :
+        <Card>
+          <Header>
+            Reaction Roles
+          </Header>
+          <Content>
+            <div className='reactRoles'>
+              {
+                reactRoles ? 
+                reactRoles.map(r => 
+                  <RoleEmoji
+                    color={r.role_color}
+                    key={`${r.role_id}${r.emoji_id}`}
+                  >
+                    {r.role_name}
+                    {
+                      r.isUnicode ?
+                        <img 
+                          src={`${emojiUrl}${r.emoji_id}${r.animated ? '.gif': '.png'}`} 
+                          title={r.emoji_name}
+                        /> :
+                        <Twemoji
+                          style={{display: 'inline'}}
+                        >
+                          {r.emoji_name}
+                        </Twemoji>  
+                    }
+                  </RoleEmoji>
+                ) :
+                <span>You have no reaction roles made yet.</span>
+              }
+            </div>
+          </Content>
+        </Card>
+      </Body> :
       <MissingGuild>
         <div className='missingDialog'>
           <div className='missingGuild center'>
