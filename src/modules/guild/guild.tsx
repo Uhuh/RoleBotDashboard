@@ -138,12 +138,27 @@ const RoleEmoji = styled.div`
   color: #718096;
   font-size: 18px;
   border: 2px solid ${props => props.color || '#718096'};
-  padding: 8px 8px;
+  padding: 8px;
   border-radius: 10%;
   img {
     width: 18px;
     height: 18px;
     padding-left: 10px;
+  }
+`;
+
+const OutlineBtn = styled.button`
+  color: #718096;
+  border: 2px solid #718096;
+  background-color: transparent;
+  font-size: 18px;
+  padding: 8px;
+  border-radius: 10%;
+  transition: background-color 0.3s;
+  &:hover {
+    background-color: grey;
+    color: #e2e8f0;
+    border: 2px solid #e2e8f0;
   }
 `;
 
@@ -153,6 +168,7 @@ const GuildInfo = (props: {guild: Guild}) => {
   const [userGuild, setGuild] = React.useState<any>();
   const [guildEmojis, setEmojis] = React.useState<GuildEmojiManager | undefined>();
   const [guildRoles, setRoles] = React.useState<RoleManager | undefined>();
+  const [reactRoles, setReactRoles] = React.useState<any>();
   const [role, setRole] = React.useState<Role>();
   const [emoji, setEmoji] = React.useState<Emoji | string>();
   const docUrl = 'https://app.gitbook.com/@duwtgb/s/rolebot/';
@@ -258,8 +274,13 @@ const GuildInfo = (props: {guild: Guild}) => {
                 />
               }
             </RoleEmoji>
+            <OutlineBtn disabled={!emoji || !role}>SUBMIT</OutlineBtn>
           </div>
         </ReactionRelation>
+
+        <div>
+          <p>Reaction Roles here :)</p>
+        </div>
       </Area> :
       <MissingGuild>
         <div className='missingDialog'>
