@@ -1,0 +1,6 @@
+.env
+node*
+build/
+*.log
+.vscode
+errors.log
