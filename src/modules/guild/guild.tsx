@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import { Guild } from './interfaces';
 import { Avatar } from '../nav/navbar';
 import DiscordAPI from '../../api/api';
+import emojis from './emojis';
+import Twemoji from 'react-twemoji';
 import { GuildEmojiManager, RoleManager, Role, Emoji } from 'discord.js';
 
 const MissingGuild = styled.div`
@@ -98,6 +100,14 @@ const ReactionRelation = styled.div`
     .emojis {
       margin-left: 10px;
     }
+    .emojiTitle {
+      font-size: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .twemoji {
+      display: inline-block;
+    }
   }
   .footer {
     margin-top: 20px;
@@ -144,7 +154,7 @@ const GuildInfo = (props: {guild: Guild}) => {
   const [guildEmojis, setEmojis] = React.useState<GuildEmojiManager | undefined>();
   const [guildRoles, setRoles] = React.useState<RoleManager | undefined>();
   const [role, setRole] = React.useState<Role>();
-  const [emoji, setEmoji] = React.useState<Emoji>();
+  const [emoji, setEmoji] = React.useState<Emoji | string>();
   const docUrl = 'https://app.gitbook.com/@duwtgb/s/rolebot/';
   const emojiUrl ='https://cdn.discordapp.com/emojis/';
   const inviteUrl = `https://discordapp.com/oauth2/authorize?client_id=493668628361904139&guild_id=${guild.id}&scope=bot&permissions=269315264`;
@@ -188,23 +198,43 @@ const GuildInfo = (props: {guild: Guild}) => {
                   >
                     {r.name}
                   </RoleName>
-                ) : 
+                ) 
+                : 
                 <span>No roles. :)</span>
               }
             </div>
             <div className='column emojis'>
-              {
-                (guildEmojis && guildEmojis.cache.size) ? 
-                guildEmojis.cache.map(e => 
-                  <img 
-                    src={`${emojiUrl}${e.id}${e.animated ? '.gif': '.png'}`}
-                    onClick={() => setEmoji(e)}
-                    title={e.name}
-                    key={e.id}
-                  />
-                ) : 
-                <span>No emojis :)</span>
-              }
+              <>
+              {(guildEmojis && guildEmojis.cache.size &&
+                <>
+                  <span className='emojiTitle'>Custom Emojis</span>
+                  {
+                    guildEmojis.cache.map(e => 
+                      <img 
+                        src={`${emojiUrl}${e.id}${e.animated ? '.gif': '.png'}`}
+                        onClick={() => setEmoji(e)}
+                        title={e.name}
+                        key={e.id}
+                      />
+                    )
+                  }
+                </>
+              )}
+                <span className='emojiTitle'>Unicode Emojis</span>
+                {
+                  emojis.map((e, i) => 
+                    <Twemoji
+                      key={`${e}-${i}`}
+                      className='twemoji'
+                      onClick={() => {
+                        setEmoji(e);
+                      }}
+                    >
+                      {e}
+                    </Twemoji>  
+                  )
+                }
+              </>
             </div>
           </div>
           <div className='footer'>
@@ -212,10 +242,13 @@ const GuildInfo = (props: {guild: Guild}) => {
               {role ? role.name : 'Role Name'}
               { 
                 emoji ? 
-                <img 
-                  src={`${emojiUrl}${emoji.id}${emoji.animated ? '.gif': '.png'}`} 
-                  title={emoji.name}
-                /> :
+                (emoji instanceof Emoji) ? 
+                  <img 
+                    src={`${emojiUrl}${emoji.id}${emoji.animated ? '.gif': '.png'}`} 
+                    title={emoji.name}
+                  /> :
+                  <span>{emoji}</span>
+                :
                 <img 
                   src={'https://cdn.discordapp.com/avatars/493668628361904139/4785b50379b52116b3522e4533ce8396.webp'} 
                 />
