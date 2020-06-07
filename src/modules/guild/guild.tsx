@@ -247,7 +247,11 @@ const GuildInfo = (props: {guild: Guild}) => {
                     src={`${emojiUrl}${emoji.id}${emoji.animated ? '.gif': '.png'}`} 
                     title={emoji.name}
                   /> :
-                  <span>{emoji}</span>
+                  <Twemoji
+                    style={{display: 'inline'}}
+                  >
+                    {emoji}
+                  </Twemoji>  
                 :
                 <img 
                   src={'https://cdn.discordapp.com/avatars/493668628361904139/4785b50379b52116b3522e4533ce8396.webp'} 
