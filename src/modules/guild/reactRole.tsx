@@ -13,10 +13,12 @@ const RoleEmoji = styled.div`
   display: flex;
   margin: 5px;
   align-items: center;
+  transition: none;
   img {
-    width: 18px;
-    height: 18px;
-    padding-left: 10px;
+    transition: none;
+    width: 18px !important;
+    height: 18px !important;
+    padding-left: 10px !important;
   }
 `;
 

@@ -1,5 +1,9 @@
 import * as DiscordOauth from 'discord-oauth2';
+import axios, { AxiosRequestConfig } from 'axios';
+import Cookies from 'universal-cookie';
+import * as jwt from 'jsonwebtoken';
 import * as Discord from 'discord.js';
+const cookies = new Cookies();
 
 export class DiscordAPI {
   private userInfo: Map<string, any>;
@@ -52,6 +56,29 @@ export class DiscordAPI {
       scope: 'identify guilds',
       code
     });
+  }
+
+  getReactionRoles = async (guildId: string) => {
+    const data = await this.request('GET', `/reaction/${guildId}`, {});
+    console.log(data);
+  }
+
+  request = async (
+    method: AxiosRequestConfig['method'],
+    path: string,
+    params: {}
+  ): Promise<any> => {
+    const access_token = cookies.get('access_token');
+    const url = `http://localhost:8080${path}`;
+    const user_token = jwt.sign(access_token, process.env.JWT_SECRET || '');
+    return (
+      await axios({
+        method,
+        url,
+        headers: { 'Authorization': `Bearer ${user_token}`},
+        params
+      })
+    ).data;
   }
 }
 

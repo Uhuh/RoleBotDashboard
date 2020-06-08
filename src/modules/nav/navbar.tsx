@@ -12,6 +12,7 @@ export const Avatar = styled.img`
 `;
 
 const NavBar = styled.div`
+  z-index: 1;
   background-color: #1a1c20;
   position: fixed;
   width: 100%;

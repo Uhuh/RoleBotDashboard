@@ -70,6 +70,7 @@ const Header = styled.div`
 const Content = styled.div`
   display: flex;
   flex-direction: row;
+  height: 100%;
   overflow-y: hidden;
   img {
     transition: transform 0.2s;
@@ -88,6 +89,7 @@ const Content = styled.div`
     width: 50%;
   }
   .reactRoles {
+    align-content: flex-start;
     display: flex;
     flex-wrap: wrap;
     overflow: auto;
@@ -157,6 +159,7 @@ const OutlineBtn = styled.button`
   height: fit-content;
   font-size: 18px;
   padding: 8px;
+  margin: 5px;
   border-radius: 10%;
   transition: background-color 0.3s;
   &:hover {
@@ -168,13 +171,14 @@ const OutlineBtn = styled.button`
 
 const GuildInfo = (props: {guild: Guild}) => {
   const { guild } = props;
+  const [role, setRole] = React.useState<Role>();
   const [loading, setLoad] = React.useState(true);
   const [userGuild, setGuild] = React.useState<any>();
-  const [guildEmojis, setEmojis] = React.useState<GuildEmojiManager | undefined>();
-  const [guildRoles, setRoles] = React.useState<RoleManager | undefined>();
-  const [reactRoles, setReactRoles] = React.useState<IReactionRole[]>();
-  const [role, setRole] = React.useState<Role>();
   const [emoji, setEmoji] = React.useState<Emoji | string>();
+  const [reactRoles, setReactRoles] = React.useState<IReactionRole[]>();
+  const [guildRoles, setRoles] = React.useState<RoleManager | undefined>();
+  const [guildEmojis, setEmojis] = React.useState<GuildEmojiManager | undefined>();
+  
   const docUrl = 'https://app.gitbook.com/@duwtgb/s/rolebot/';
   const emojiUrl ='https://cdn.discordapp.com/emojis/';
   const inviteUrl = `https://discordapp.com/oauth2/authorize?client_id=493668628361904139&guild_id=${guild.id}&scope=bot&permissions=269315264`;
@@ -182,6 +186,7 @@ const GuildInfo = (props: {guild: Guild}) => {
   React.useEffect(() => {
     setTimeout(() => {
       const botGuild = DiscordAPI.getGuild(guild.id);
+      DiscordAPI.getReactionRoles(guild.id);
       setGuild(botGuild);
       setRoles(botGuild?.roles);
       setEmojis(botGuild?.emojis);
@@ -211,7 +216,7 @@ const GuildInfo = (props: {guild: Guild}) => {
           emoji_id: (emoji instanceof Emoji) ? emoji.id : emoji,
           emoji_name: (emoji instanceof Emoji) ? emoji.name : emoji,
           animated: (emoji instanceof Emoji) ? emoji.animated : false,
-          isUnicode: (emoji instanceof Emoji)
+          isUnicode: !(emoji instanceof Emoji)
         }]
       );
     }
@@ -340,6 +345,17 @@ const GuildInfo = (props: {guild: Guild}) => {
             }
           </div>
         </Content>
+        <Footer>
+          <OutlineBtn>
+            Delete
+          </OutlineBtn>
+          <OutlineBtn>
+            Add to folder
+          </OutlineBtn>
+          <OutlineBtn>
+            something
+          </OutlineBtn>
+        </Footer>
       </Card>
     </Body>
   );
