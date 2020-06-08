@@ -299,7 +299,7 @@ const GuildInfo = (props: {guild: Guild}) => {
           </div>
           <div className='column emojis'>
             <>
-            {(guildEmojis && guildEmojis.cache.size &&
+            {((guildEmojis && guildEmojis.cache.size > 0) &&
               <>
                 <span className='emojiTitle'>Custom Emojis</span>
                 {
