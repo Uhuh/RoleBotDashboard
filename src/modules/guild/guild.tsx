@@ -97,7 +97,7 @@ const Content = styled.div`
     overflow-y: auto;
     overflow-x: hidden;
     height: 100%;
-    img { margin: 0; }
+    img { margin: 0; transform: none; }
   }
   .roles {
     display: flex;
@@ -162,7 +162,10 @@ const OutlineBtn = styled.button`
   margin: 5px;
   border-radius: 10%;
   transition: background-color 0.3s;
-  &:hover {
+  .disabled &:hover {
+    cursor: not-allowed;
+  }
+  .active &:hover {
     background-color: grey;
     color: #e2e8f0;
     border: 2px solid #e2e8f0;
@@ -186,7 +189,26 @@ const GuildInfo = (props: {guild: Guild}) => {
   React.useEffect(() => {
     setTimeout(() => {
       const botGuild = DiscordAPI.getGuild(guild.id);
-      DiscordAPI.getReactionRoles(guild.id);
+      DiscordAPI.getReactionRoles(guild.id)
+        .then(data => {
+          setReactRoles(
+            data.map(r => {
+              const e = DiscordAPI.bot_client.emojis.cache.get(r.emoji_id);
+              const role = botGuild?.roles.cache.get(r.role_id);
+
+              return {
+                role_color: role?.hexColor,
+                role_id: r.role_id,
+                role_name: r.role_name,
+                emoji_id: r.emoji_id,
+                emoji_name: e?.name || r.emoji_id,
+                folder_id: r.folder_id,
+                animated: e?.animated || false,
+                isUnicode: r.emoji_id.length <= 2
+              }
+            })
+          )
+        })
       setGuild(botGuild);
       setRoles(botGuild?.roles);
       setEmojis(botGuild?.emojis);
@@ -210,6 +232,7 @@ const GuildInfo = (props: {guild: Guild}) => {
       setReactRoles(
         [...arr,
         {
+          folder_id: null,
           role_id: role.id,
           role_name: role.name,
           role_color: role.hexColor,
@@ -309,12 +332,14 @@ const GuildInfo = (props: {guild: Guild}) => {
         <Footer>
           <OutlineBtn 
             disabled={!emoji || !role}
+            className={(emoji && role) ? 'active' : 'disabled'}
             onClick={submitReaction}
           >
-            SUBMIT
+            Submit
           </OutlineBtn>
           <ReactionRole
             reactRole={{
+              folder_id: null,
               role_id: role?.id,
               role_name: role?.name,
               role_color: role?.hexColor,

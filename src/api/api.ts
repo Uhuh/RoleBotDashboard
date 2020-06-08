@@ -3,6 +3,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import Cookies from 'universal-cookie';
 import * as jwt from 'jsonwebtoken';
 import * as Discord from 'discord.js';
+import { IReactionRole } from './interfaces';
 const cookies = new Cookies();
 
 export class DiscordAPI {
@@ -58,9 +59,16 @@ export class DiscordAPI {
     });
   }
 
-  getReactionRoles = async (guildId: string) => {
+  getReactionRoles = async (guildId: string): Promise<IReactionRole[]> => {
     const data = await this.request('GET', `/reaction/${guildId}`, {});
-    console.log(data);
+    
+    return data || [];
+  }
+
+  getFolders = async (guildId: string) => {
+    const data = await this.request('GET', `/folder/${guildId}`, {});
+
+    return data || [];
   }
 
   request = async (

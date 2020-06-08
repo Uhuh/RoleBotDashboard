@@ -13,9 +13,7 @@ const RoleEmoji = styled.div`
   display: flex;
   margin: 5px;
   align-items: center;
-  transition: none;
   img {
-    transition: none;
     width: 18px !important;
     height: 18px !important;
     padding-left: 10px !important;
@@ -34,7 +32,6 @@ const ReactionRole = (props: {reactRole: IReactionRole}) => {
         !reactRole.isUnicode ? 
           <img 
             src={`${emojiUrl}${reactRole.emoji_id}${reactRole.animated ? '.gif': '.png'}`} 
-            title={reactRole.emoji_name}
           /> :
           <Twemoji
             style={{display: 'inline'}}

@@ -8,6 +8,7 @@ export interface Guild {
 }
 
 export interface IReactionRole {
+  folder_id: string | null;
   role_id: string | undefined;
   emoji_id: string | null | undefined;
   role_name: string | undefined;
