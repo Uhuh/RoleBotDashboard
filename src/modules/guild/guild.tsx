@@ -100,6 +100,7 @@ const Content = styled.div`
     img { margin: 0; transform: none; }
   }
   .roles {
+    align-content: flex-start;
     display: flex;
     flex-wrap: wrap;
   }
@@ -142,6 +143,7 @@ const RoleName = styled.div`
   border-radius: 10%;
   width: fit-content !important;
   margin: 5px;
+  height: fit-content;
   padding: 5px 10px;
   font-size: 18px;
   transition: transform 0.2s;
